@@ -16,46 +16,43 @@ module.exports = function (model, config) {
 		var collection = self[config.property].toObject();
 		var setters = []
 
-		for (var i in collection) {
-			if (collection[i].__processed !== true) {
-				setters.push((function (item) {
-
-					//Update the actual relationship entry, not the copy (item)
-					for (var k in self[config.property]) {
-						var relationship = self[config.property][k];
-						if (relationship._id.toString() == item._id.toString()) {
-							//Assign item
-							item = self[config.property][k];
-							break;
-						}
-					}
-
-					return function (done) {
-						config.targetModel.findOne({
-								_id: item._id
-							},
-							function (err, doc) {
-								if (err) {
-									return done(err);
-								}
-
-								if (!doc) {
-									return done(new Error('Relationship points to document that does not exist.'));
-								}
-
-								for (var j in config.properties || []) {
-									item[config.properties[j]] = doc[config.properties[j]]
-								}
-
-								item.__processed = true;
-
-								return done();
-							}
-						)
-					};
-				})(collection[i]));
+		collection.forEach(function (item, i) {
+			if (!item.__processed) {
+				return;
 			}
-		}
+
+			setters.push((function (item, i) {
+				//Get the actual relationship object, not a copy
+				item = self[config.property][i];
+
+				return function (done) {
+					config.targetModel.findOne({
+							_id: item._id
+						},
+						function (err, doc) {
+							if (err) {
+								return done(err);
+							}
+
+							if (!doc) {
+								return done(new Error('Relationship points to document that does not exist.'));
+							}
+
+							//update properties
+							for (var j in config.properties || []) {
+								item[config.properties[j]] = doc[config.properties[j]]
+							}
+
+							//mark as processed so this doesn't happen on every save
+							item.__processed = (new Date()).getTime();
+
+							return done();
+						}
+					)
+				};
+			})(item, i));
+
+		});
 
 		async.parallel(setters, function (err, results) {
 			if (err) {
