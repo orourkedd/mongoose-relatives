@@ -1,6 +1,6 @@
 {
   "name": "mongoose-relatives",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Helper for one-to-many relationships in Mongoose.",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/orourkedd/mongoose-relatives",
   "dependencies": {
-    "async": "^0.9.0",
-    "lodash": "^3.5.0"
+    "async": "^0.9.0"
   }
 }

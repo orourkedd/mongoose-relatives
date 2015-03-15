@@ -1,5 +1,4 @@
 var async = require('async');
-var _ = require('lodash');
 var Relationship = require('./relationship');
 
 module.exports = function (model, config) {
