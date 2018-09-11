@@ -1,6 +1,6 @@
 {
   "name": "mongoose-relatives",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Helper for one-to-many relationships in Mongoose.",
   "main": "index.js",
   "scripts": {
